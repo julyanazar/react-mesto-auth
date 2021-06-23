@@ -6,8 +6,11 @@ import ImagePopup from './ImagePopup';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+import Login from './Login';
+import Register from './Register';
 import api from '../utils/api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { Route, Redirect, Switch } from 'react-router-dom';
 
 function App() {
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
@@ -18,6 +21,8 @@ function App() {
     const [currentUser, setCurrentUser] = React.useState({});
 
     const [cards, setCards] = React.useState([]);
+
+    const [loggedIn, setLoggedIn] = React.useState(false);
 
     React.useEffect(() => {
 
@@ -122,17 +127,33 @@ function App() {
         <CurrentUserContext.Provider value={currentUser}>
             <div className='page'>
                 <Header />
-                {currentUser &&
-                    <Main
-                        onEditProfile={handleEditProfileClick}
-                        onAddPlace={handleAddPlaceClick}
-                        onEditAvatar={handleEditAvatarClick}
-                        onCardClick={handleCardClick}
-                        cards={cards}
-                        onCardLike={handleCardLike}
-                        onCardDelete={handleCardDelete} />
-                }
-                <Footer />
+                <Switch>
+                    <Route path="/sign-in">
+                        <Login />
+                    </Route>
+
+                    <Route path="/sign-up">
+                        <Register />
+                    </Route>
+
+                    <Route path="/main">
+                        {currentUser &&
+                            <Main
+                                onEditProfile={handleEditProfileClick}
+                                onAddPlace={handleAddPlaceClick}
+                                onEditAvatar={handleEditAvatarClick}
+                                onCardClick={handleCardClick}
+                                cards={cards}
+                                onCardLike={handleCardLike}
+                                onCardDelete={handleCardDelete} />
+                        }
+                        <Footer />
+                    </Route>
+
+                    <Route path="/">
+                        {loggedIn ? <Redirect to="/main" /> : <Redirect to="/sign-in" />}
+                    </Route>
+                </Switch>
             </div>
 
             {currentUser &&
