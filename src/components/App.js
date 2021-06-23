@@ -1,13 +1,14 @@
 import React from 'react';
 import Header from './Header';
 import Main from './Main';
-import Footer from './Footer';
+// import Footer from './Footer';
 import ImagePopup from './ImagePopup';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import Login from './Login';
 import Register from './Register';
+import ProtectedRoute from './ProtectedRoute';
 import api from '../utils/api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { Route, Redirect, Switch } from 'react-router-dom';
@@ -22,7 +23,7 @@ function App() {
 
     const [cards, setCards] = React.useState([]);
 
-    const [loggedIn, setLoggedIn] = React.useState(false);
+    const [loggedIn, setLoggedIn] = React.useState(true);
 
     React.useEffect(() => {
 
@@ -128,6 +129,21 @@ function App() {
             <div className='page'>
                 <Header />
                 <Switch>
+                    {currentUser && 
+                        <ProtectedRoute 
+                        exact 
+                        path="/" 
+                        loggedIn={loggedIn} 
+                        component={Main}
+                        onEditProfile={handleEditProfileClick}
+                        onAddPlace={handleAddPlaceClick}
+                        onEditAvatar={handleEditAvatarClick}
+                        onCardClick={handleCardClick}
+                        cards={cards}
+                        onCardLike={handleCardLike}
+                        onCardDelete={handleCardDelete}
+                    />}
+
                     <Route path="/sign-in">
                         <Login />
                     </Route>
@@ -136,22 +152,8 @@ function App() {
                         <Register />
                     </Route>
 
-                    <Route path="/main">
-                        {currentUser &&
-                            <Main
-                                onEditProfile={handleEditProfileClick}
-                                onAddPlace={handleAddPlaceClick}
-                                onEditAvatar={handleEditAvatarClick}
-                                onCardClick={handleCardClick}
-                                cards={cards}
-                                onCardLike={handleCardLike}
-                                onCardDelete={handleCardDelete} />
-                        }
-                        <Footer />
-                    </Route>
-
                     <Route path="/">
-                        {loggedIn ? <Redirect to="/main" /> : <Redirect to="/sign-in" />}
+                        {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
                     </Route>
                 </Switch>
             </div>
