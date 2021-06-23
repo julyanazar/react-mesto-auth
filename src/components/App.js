@@ -23,7 +23,9 @@ function App() {
 
     const [cards, setCards] = React.useState([]);
 
-    const [loggedIn, setLoggedIn] = React.useState(true);
+    const [loggedIn, setLoggedIn] = React.useState(false);
+    const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = React.useState(false);
+    const [message, setMessage] = React.useState({ iconPath: '', text: '' });
 
     React.useEffect(() => {
 
@@ -79,11 +81,20 @@ function App() {
         setSelectedCard(card);
     }
 
+    function handleInfoTooltipPopupOpen() {
+        setIsInfoTooltipPopupOpen(true);
+    }
+
+    function hadleInfoTooltipContent({iconPath, text}) {
+        setMessage({ iconPath: iconPath, text: text })
+      }
+
     function closeAllPopups() {
         setIsEditAvatarPopupOpen(false);
         setIsEditProfilePopupOpen(false);
         setIsAddPlacePopupOpen(false);
         setSelectedCard(null);
+        setIsInfoTooltipPopupOpen(false);
     }
 
     function handleUpdateUser({ name, about }) {
@@ -123,12 +134,11 @@ function App() {
             .catch(err => { console.log(err) });
     }
 
-
     return (
         <CurrentUserContext.Provider value={currentUser}>
             <div className='page'>
                 <Header loggedIn={loggedIn} />
-                
+
                 <Switch>
                     {currentUser &&
                         <ProtectedRoute
@@ -150,7 +160,11 @@ function App() {
                     </Route>
 
                     <Route path="/sign-up">
-                        <Register />
+                        <Register
+                            openInfoTooltip={handleInfoTooltipPopupOpen}
+                            onClose={closeAllPopups}
+                            infoTooltipContent={hadleInfoTooltipContent}
+                        />
                     </Route>
 
                     <Route path="/">
@@ -187,7 +201,9 @@ function App() {
 
             {currentUser &&
                 <InfoTooltip
+                    isOpen={isInfoTooltipPopupOpen} 
                     onClose={closeAllPopups}
+                    message={message}
                 />
             }
 
