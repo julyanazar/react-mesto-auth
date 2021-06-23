@@ -1,7 +1,6 @@
 import React from 'react';
 import Header from './Header';
 import Main from './Main';
-// import Footer from './Footer';
 import ImagePopup from './ImagePopup';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
@@ -9,6 +8,7 @@ import AddPlacePopup from './AddPlacePopup';
 import Login from './Login';
 import Register from './Register';
 import ProtectedRoute from './ProtectedRoute';
+import InfoTooltip from './InfoTooltip';
 import api from '../utils/api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { Route, Redirect, Switch } from 'react-router-dom';
@@ -127,22 +127,23 @@ function App() {
     return (
         <CurrentUserContext.Provider value={currentUser}>
             <div className='page'>
-                <Header />
+                <Header loggedIn={loggedIn} />
+                
                 <Switch>
-                    {currentUser && 
-                        <ProtectedRoute 
-                        exact 
-                        path="/" 
-                        loggedIn={loggedIn} 
-                        component={Main}
-                        onEditProfile={handleEditProfileClick}
-                        onAddPlace={handleAddPlaceClick}
-                        onEditAvatar={handleEditAvatarClick}
-                        onCardClick={handleCardClick}
-                        cards={cards}
-                        onCardLike={handleCardLike}
-                        onCardDelete={handleCardDelete}
-                    />}
+                    {currentUser &&
+                        <ProtectedRoute
+                            exact
+                            path="/"
+                            loggedIn={loggedIn}
+                            component={Main}
+                            onEditProfile={handleEditProfileClick}
+                            onAddPlace={handleAddPlaceClick}
+                            onEditAvatar={handleEditAvatarClick}
+                            onCardClick={handleCardClick}
+                            cards={cards}
+                            onCardLike={handleCardLike}
+                            onCardDelete={handleCardDelete}
+                        />}
 
                     <Route path="/sign-in">
                         <Login />
@@ -183,6 +184,12 @@ function App() {
             <ImagePopup
                 card={selectedCard}
                 onClose={closeAllPopups} />
+
+            {currentUser &&
+                <InfoTooltip
+                    onClose={closeAllPopups}
+                />
+            }
 
         </CurrentUserContext.Provider>
     );
