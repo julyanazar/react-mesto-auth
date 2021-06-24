@@ -150,12 +150,20 @@ function App() {
             .catch(err => { console.log(err) });
     }
 
+    function handleSignOut() {
+        setLoggedIn(false);
+        localStorage.removeItem('jwt');
+        setEmail('');
+        history.push('/sign-in');
+    }
+
     return (
         <CurrentUserContext.Provider value={currentUser}>
             <div className='page'>
                 <Header
                     loggedIn={loggedIn}
-                    email={email} />
+                    email={email}
+                    handleSignOut={handleSignOut} />
 
                 <Switch>
                     {currentUser &&
