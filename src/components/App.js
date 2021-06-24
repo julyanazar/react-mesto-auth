@@ -11,7 +11,8 @@ import ProtectedRoute from './ProtectedRoute';
 import InfoTooltip from './InfoTooltip';
 import api from '../utils/api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import { Route, Redirect, Switch } from 'react-router-dom';
+import { Route, Redirect, Switch, useHistory } from 'react-router-dom';
+import * as Auth from '../utils/auth';
 
 function App() {
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
@@ -27,6 +28,7 @@ function App() {
     const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = React.useState(false);
     const [message, setMessage] = React.useState({ iconPath: '', text: '' });
     const [email, setEmail] = React.useState('');
+    const history = useHistory();
 
     React.useEffect(() => {
 
@@ -45,6 +47,19 @@ function App() {
             })
             .catch(err => { console.log(err) });
     }, []);
+
+    React.useEffect(() => {
+        const jwt = localStorage.getItem('jwt');
+        if (jwt) {
+            Auth.getContent(jwt)
+                .then((res) => {
+                    setLoggedIn(true);
+                    setEmail(res.data.email);
+                    history.push('/');
+                })
+                .catch(err => console.log(err));
+        }
+    }, [history]);
 
     function handleCardLike(card) {
         // Проверяем, есть ли уже лайк на этой карточке
@@ -138,9 +153,9 @@ function App() {
     return (
         <CurrentUserContext.Provider value={currentUser}>
             <div className='page'>
-                <Header 
-                loggedIn={loggedIn}
-                email={email} />
+                <Header
+                    loggedIn={loggedIn}
+                    email={email} />
 
                 <Switch>
                     {currentUser &&
