@@ -18,33 +18,50 @@ function Register({ openInfoTooltip, onClose, infoTooltipContent }) {
     }
 
     function handleSubmit(e) {
-        e.preventDefault()
+        e.preventDefault();
+
         const email = valueEmail;
         const password = valuePassword;
-        Auth.register(email, password).then(() => {
-            infoTooltipContent({
-                iconPath: resultIcon,
-                text: 'Вы успешно зарегистрировались!'
+
+        Auth.register(email, password)
+            .then(() => {
+                infoTooltipContent({
+                    iconPath: resultIcon,
+                    text: 'Вы успешно зарегистрировались!'
+                })
+                openInfoTooltip();
+
+                setTimeout(history.push, 3000, "/sign-in");
+                setTimeout(onClose, 2500);
             })
-            openInfoTooltip();
-            setTimeout(history.push, 3000, "/sign-in");
-            setTimeout(onClose, 2500);
-        }).catch(() => {
-            infoTooltipContent({
-                iconPath: resultIconError,
-                text: 'Что-то пошло не так! Попробуйте ещё раз.'
+            .catch(() => {
+                infoTooltipContent({
+                    iconPath: resultIconError,
+                    text: 'Что-то пошло не так! Попробуйте ещё раз.'
+                })
+                openInfoTooltip();
+                setTimeout(onClose, 2500);
             })
-            openInfoTooltip();
-            setTimeout(onClose, 2500);
-        })
     }
 
     return (
         <section className="login">
             <h1 className="login__title">Регистрация</h1>
             <form onSubmit={handleSubmit} className="login__form">
-                <input value={valueEmail} type="email" className="login__input" placeholder="Email" onChange={handleChangeEmail} />
-                <input value={valuePassword} type="password" className="login__input" placeholder="Пароль" onChange={handleChangePassword} />
+                
+                <input 
+                    value={valueEmail} 
+                    type="email" 
+                    className="login__input" 
+                    placeholder="Email" 
+                    onChange={handleChangeEmail} />
+                <input 
+                    value={valuePassword} 
+                    type="password" 
+                    className="login__input" 
+                    placeholder="Пароль" 
+                    onChange={handleChangePassword} />
+
                 <button className="login__submit">Зарегистрироваться</button>
             </form>
             <Link className="login__login" to="/sign-in">Уже зарегистрированы? Войти</Link>

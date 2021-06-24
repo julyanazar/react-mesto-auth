@@ -26,6 +26,7 @@ function App() {
     const [loggedIn, setLoggedIn] = React.useState(false);
     const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = React.useState(false);
     const [message, setMessage] = React.useState({ iconPath: '', text: '' });
+    const [email, setEmail] = React.useState('');
 
     React.useEffect(() => {
 
@@ -85,9 +86,9 @@ function App() {
         setIsInfoTooltipPopupOpen(true);
     }
 
-    function hadleInfoTooltipContent({iconPath, text}) {
+    function hadleInfoTooltipContent({ iconPath, text }) {
         setMessage({ iconPath: iconPath, text: text })
-      }
+    }
 
     function closeAllPopups() {
         setIsEditAvatarPopupOpen(false);
@@ -137,7 +138,9 @@ function App() {
     return (
         <CurrentUserContext.Provider value={currentUser}>
             <div className='page'>
-                <Header loggedIn={loggedIn} />
+                <Header 
+                loggedIn={loggedIn}
+                email={email} />
 
                 <Switch>
                     {currentUser &&
@@ -156,7 +159,13 @@ function App() {
                         />}
 
                     <Route path="/sign-in">
-                        <Login />
+                        <Login
+                            openInfoTooltip={handleInfoTooltipPopupOpen}
+                            onClose={closeAllPopups}
+                            infoTooltipContent={hadleInfoTooltipContent}
+                            setEmail={setEmail}
+                            setLoggedIn={setLoggedIn}
+                        />
                     </Route>
 
                     <Route path="/sign-up">
@@ -201,7 +210,7 @@ function App() {
 
             {currentUser &&
                 <InfoTooltip
-                    isOpen={isInfoTooltipPopupOpen} 
+                    isOpen={isInfoTooltipPopupOpen}
                     onClose={closeAllPopups}
                     message={message}
                 />
