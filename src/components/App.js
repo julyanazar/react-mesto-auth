@@ -1,4 +1,6 @@
 import React from 'react';
+import { Route, Redirect, Switch, useHistory } from 'react-router-dom';
+
 import Header from './Header';
 import Main from './Main';
 import ImagePopup from './ImagePopup';
@@ -9,10 +11,13 @@ import Login from './Login';
 import Register from './Register';
 import ProtectedRoute from './ProtectedRoute';
 import InfoTooltip from './InfoTooltip';
+
 import api from '../utils/api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import { Route, Redirect, Switch, useHistory } from 'react-router-dom';
 import * as Auth from '../utils/auth';
+
+import resultIcon from '../images/popup-result-icon.svg';
+import resultIconError from '../images/popup-result-icon-error.svg';
 
 function App() {
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
@@ -101,7 +106,7 @@ function App() {
         setIsInfoTooltipPopupOpen(true);
     }
 
-    function hadleInfoTooltipContent({ iconPath, text }) {
+    function handleInfoTooltipContent({ iconPath, text }) {
         setMessage({ iconPath: iconPath, text: text })
     }
 
@@ -150,6 +155,70 @@ function App() {
             .catch(err => { console.log(err) });
     }
 
+    function registration(email, password) {
+        Auth.register(email, password)
+            .then((res) => {
+                if (res.status === 201) {
+
+                    handleInfoTooltipContent({
+                        iconPath: resultIcon,
+                        text: 'Вы успешно зарегистрировались!'
+                    })
+                    handleInfoTooltipPopupOpen();
+
+                    setTimeout(history.push, 3000, "/sign-in");
+                    setTimeout(closeAllPopups, 2500);
+                }
+
+                if (res.status === 400) {
+                    console.log('Введный email уже зарегестрирован')
+                }
+            })
+            .catch((err) => {
+                handleInfoTooltipContent({
+                    iconPath: resultIconError,
+                    text: 'Что-то пошло не так! Попробуйте ещё раз.'
+                })
+                handleInfoTooltipPopupOpen();
+
+                setTimeout(closeAllPopups, 2500);
+
+                console.log(err)
+            })
+    }
+
+    function authorization(email, password) {
+        Auth.authorize(email, password)
+            .then((data) => {
+                if (!data) {
+                    throw new Error('Произошла ошибка');
+                }
+                Auth.getContent(data)
+                    .then((res) => {
+                        setEmail(res.data.email);
+                    })
+                    .catch(err => console.log(err));
+                setLoggedIn(true);
+                handleInfoTooltipContent({
+                    iconPath: resultIcon,
+                    text: 'Вы успешно авторизовались!'
+                })
+
+                setTimeout(history.push, 3000, "/");
+                setTimeout(closeAllPopups, 2500);
+            })
+            .catch((err) => {
+                handleInfoTooltipContent({
+                    iconPath: resultIconError,
+                    text: 'Что то пошло не так!'
+                })
+                handleInfoTooltipPopupOpen();
+
+                console.log(err)
+            })
+    }
+
+
     function handleSignOut() {
         setLoggedIn(false);
         localStorage.removeItem('jwt');
@@ -183,19 +252,13 @@ function App() {
 
                     <Route path="/sign-in">
                         <Login
-                            openInfoTooltip={handleInfoTooltipPopupOpen}
-                            onClose={closeAllPopups}
-                            infoTooltipContent={hadleInfoTooltipContent}
-                            setEmail={setEmail}
-                            setLoggedIn={setLoggedIn}
+                            authorization={authorization}
                         />
                     </Route>
 
                     <Route path="/sign-up">
                         <Register
-                            openInfoTooltip={handleInfoTooltipPopupOpen}
-                            onClose={closeAllPopups}
-                            infoTooltipContent={hadleInfoTooltipContent}
+                            registration={registration}
                         />
                     </Route>
 

@@ -8,21 +8,6 @@ export const register = (email, password) => {
         },
         body: JSON.stringify({ email, password })
     })
-        .then((response) => {
-            try {
-                if (response.status === 200) {
-                    return response.json();
-                }
-            } catch (e) {
-                return (e)
-            }
-        })
-        .then((res) => {
-            return res;
-        })
-        .catch((err) => {
-            console.log(err)
-        });
 };
 
 export const authorize = (email, password) => {
@@ -47,9 +32,6 @@ export const authorize = (email, password) => {
                 return data.token;
             }
         })
-        .catch((err) => {
-            console.log(err);
-        })
 }
 
 export const getContent = (token) => {
@@ -64,7 +46,4 @@ export const getContent = (token) => {
             return res.json()
         })
         .then((data) => data)
-        .catch((err) => {
-            console.log(err);
-        })
 }
